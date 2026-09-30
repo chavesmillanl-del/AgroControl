@@ -1,0 +1,731 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AgroControl S.A.S. - Sistema de Gestión Ganadera</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome for Icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+  </head>
+  <body class="bg-slate-50 font-sans text-slate-800 antialiased">
+    <!-- App Container -->
+    <div id="app" class="min-h-screen flex flex-col">
+      <!-- TOP NAVIGATION BAR -->
+      <header class="bg-emerald-800 text-white shadow-md">
+        <div
+          class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center"
+        >
+          <div class="flex items-center space-x-3">
+            <div
+              class="bg-emerald-700 p-2 rounded-lg border border-emerald-600"
+            >
+              <i class="fa-solid fa-cow text-2xl text-emerald-200"></i>
+            </div>
+            <div>
+              <h1 class="text-lg font-bold tracking-wide">
+                AgroControl S.A.S.
+              </h1>
+              <p class="text-xs text-emerald-300">
+                Sistema Web de Gestión Ganadera
+              </p>
+            </div>
+          </div>
+          <div class="flex items-center space-x-4">
+            <div
+              id="userBadge"
+              class="hidden flex items-center space-x-2 bg-emerald-900 px-3 py-1.5 rounded-full text-xs border border-emerald-700"
+            >
+              <i class="fa-solid fa-user-shield text-emerald-400"></i>
+              <span id="userNameRole" class="font-medium"
+                >Rol: Veterinario</span
+              >
+            </div>
+            <button
+              id="btnLogout"
+              onclick="logout()"
+              class="hidden bg-emerald-700 hover:bg-emerald-600 text-white text-xs px-3 py-1.5 rounded transition shadow-sm"
+            >
+              <i class="fa-solid fa-right-from-bracket mr-1"></i> Cerrar Sesión
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <!-- MAIN CONTENT AREA -->
+      <main class="flex-1 max-w-7xl w-full mx-auto p-4 md:p-6">
+        <!-- VIEW 1: LOGIN SCREEN (CU-01) -->
+        <section
+          id="loginView"
+          class="max-w-md mx-auto mt-12 bg-white rounded-xl shadow-lg border border-slate-100 overflow-hidden"
+        >
+          <div class="bg-emerald-700 px-6 py-6 text-white text-center">
+            <h2 class="text-xl font-bold">Iniciar Sesión</h2>
+            <p class="text-xs text-emerald-200 mt-1">
+              Ingrese sus credenciales para acceder al sistema
+            </p>
+          </div>
+          <div class="p-6 space-y-4">
+            <div>
+              <label
+                class="block text-xs font-semibold uppercase text-slate-500 mb-1"
+                >Correo Electrónico</label
+              >
+              <div class="relative">
+                <span
+                  class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400"
+                  ><i class="fa-solid fa-envelope"></i
+                ></span>
+                <input
+                  type="email"
+                  id="loginEmail"
+                  value="veterinario@agrocontrol.com"
+                  class="w-full pl-10 pr-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-600"
+                />
+              </div>
+            </div>
+            <div>
+              <label
+                class="block text-xs font-semibold uppercase text-slate-500 mb-1"
+                >Contraseña</label
+              >
+              <div class="relative">
+                <span
+                  class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400"
+                  ><i class="fa-solid fa-lock"></i
+                ></span>
+                <input
+                  type="password"
+                  id="loginPass"
+                  value="12345"
+                  class="w-full pl-10 pr-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-600"
+                />
+              </div>
+            </div>
+            <div>
+              <label
+                class="block text-xs font-semibold uppercase text-slate-500 mb-1"
+                >Seleccionar Perfil / Rol</label
+              >
+              <select
+                id="loginRole"
+                class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-600 bg-white"
+              >
+                <option value="Veterinario">
+                  Veterinario (Vacunas, Tratamientos, Enfermedades)
+                </option>
+                <option value="Trabajador">
+                  Trabajador de Finca (Registrar Animal, Peso)
+                </option>
+                <option value="Administrador">
+                  Administrador (Gestión General, Usuarios, Fincas)
+                </option>
+                <option value="Propietario">
+                  Propietario (Consulta e Historial)
+                </option>
+              </select>
+            </div>
+            <button
+              onclick="login()"
+              class="w-full bg-emerald-700 hover:bg-emerald-800 text-white font-medium py-2.5 rounded-lg text-sm transition shadow-md"
+            >
+              Acceder al Sistema <i class="fa-solid fa-arrow-right ml-1"></i>
+            </button>
+            <p class="text-center text-xs text-slate-400 mt-2">
+              Simulación académica basada en el diagrama de secuencias UML
+            </p>
+          </div>
+        </section>
+
+        <!-- VIEW 2: DASHBOARD MAIN -->
+        <div id="dashboardView" class="hidden space-y-6">
+          <!-- Quick Navigation Bar -->
+          <div
+            class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 flex flex-wrap justify-between items-center gap-4"
+          >
+            <div>
+              <h2 id="welcomeMsg" class="text-xl font-bold text-slate-800">
+                Panel de Control
+              </h2>
+              <p class="text-xs text-slate-500">
+                Seleccione una opción para interactuar con los procesos
+                modelados.
+              </p>
+            </div>
+            <div class="flex flex-wrap gap-2">
+              <button
+                onclick="switchTab('animals')"
+                class="px-4 py-2 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 rounded-lg text-sm font-medium transition border border-emerald-200"
+              >
+                <i class="fa-solid fa-cow mr-1.5"></i> Animales y Fincas
+              </button>
+              <button
+                onclick="switchTab('vaccine')"
+                class="px-4 py-2 bg-emerald-700 text-white hover:bg-emerald-800 rounded-lg text-sm font-medium transition shadow-sm"
+              >
+                <i class="fa-solid fa-syringe mr-1.5"></i> Registrar Vacuna
+                (Actividad 4 & 7)
+              </button>
+              <button
+                onclick="switchTab('state')"
+                class="px-4 py-2 bg-slate-100 text-slate-700 hover:bg-slate-200 rounded-lg text-sm font-medium transition border border-slate-200"
+              >
+                <i class="fa-solid fa-diagram-project mr-1.5"></i> Ciclo de
+                Estados (Actividad 8)
+              </button>
+            </div>
+          </div>
+
+          <!-- TAB 1: ANIMALS LIST -->
+          <div id="tabAnimals" class="space-y-4">
+            <div
+              class="bg-white rounded-xl shadow-sm border border-slate-100 p-5"
+            >
+              <div class="flex justify-between items-center mb-4">
+                <h3 class="font-bold text-slate-700 text-base">
+                  <i class="fa-solid fa-list text-emerald-600 mr-2"></i>
+                  Inventario de Animales (Finca La Esperanza)
+                </h3>
+                <button
+                  onclick="openRegisterAnimalModal()"
+                  class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs px-3 py-2 rounded-lg font-medium transition"
+                >
+                  <i class="fa-solid fa-plus mr-1"></i> Registrar Animal (CU-04)
+                </button>
+              </div>
+              <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse text-sm">
+                  <thead>
+                    <tr class="bg-slate-100 text-slate-600 uppercase text-xs">
+                      <th class="p-3">Arete</th>
+                      <th class="p-3">Especie / Raza</th>
+                      <th class="p-3">Finca</th>
+                      <th class="p-3">Peso Actual</th>
+                      <th class="p-3">Estado</th>
+                      <th class="p-3 text-right">Acciones</th>
+                    </tr>
+                  </thead>
+                  <tbody id="animalTableBody" class="divide-y divide-slate-100">
+                    <!-- Injected by JS -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- TAB 2: VACCINATION WORKFLOW (Simulating Activity 4 and Sequence Diagram) -->
+          <div id="tabVaccine" class="hidden space-y-6">
+            <div
+              class="bg-white rounded-xl shadow-sm border border-slate-100 p-6"
+            >
+              <h3 class="font-bold text-slate-800 text-base mb-2">
+                <i class="fa-solid fa-syringe text-emerald-600 mr-2"></i> Módulo
+                de Vacunación (Diagrama de Secuencia & Actividades)
+              </h3>
+              <p class="text-xs text-slate-500 mb-6">
+                Este formulario emula el proceso exacto validado en la Actividad
+                4 y los 15 mensajes del Diagrama de Secuencia.
+              </p>
+
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="space-y-4">
+                  <div>
+                    <label
+                      class="block text-xs font-semibold uppercase text-slate-500 mb-1"
+                      >Buscar Animal por Número de Arete</label
+                    >
+                    <div class="flex space-x-2">
+                      <input
+                        type="text"
+                        id="searchArete"
+                        value="ARETE-001"
+                        class="flex-1 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-600"
+                      />
+                      <button
+                        onclick="simularBusquedaAnimal()"
+                        class="bg-slate-700 hover:bg-slate-800 text-white px-4 py-2 rounded-lg text-xs font-medium transition"
+                      >
+                        Buscar
+                      </button>
+                    </div>
+                  </div>
+
+                  <div
+                    id="animalInfoCard"
+                    class="hidden bg-emerald-50 border border-emerald-200 rounded-lg p-4 text-xs space-y-1"
+                  >
+                    <p class="font-bold text-emerald-800 text-sm">
+                      <i class="fa-solid fa-circle-check mr-1"></i> Animal
+                      Encontrado en Base de Datos
+                    </p>
+                    <p>
+                      <strong>Arete:</strong>
+                      <span id="infoArete">ARETE-001</span>
+                    </p>
+                    <p>
+                      <strong>Raza/Especie:</strong>
+                      <span id="infoRaza">Bovino / Cebú</span>
+                    </p>
+                    <p>
+                      <strong>Estado Actual:</strong>
+                      <span
+                        id="infoEstado"
+                        class="px-2 py-0.5 bg-emerald-200 text-emerald-900 rounded font-bold"
+                        >Activo</span
+                      >
+                    </p>
+                  </div>
+
+                  <div class="border-t pt-4 space-y-4">
+                    <h4 class="font-bold text-slate-700 text-sm">
+                      Datos de la Vacuna
+                    </h4>
+                    <div>
+                      <label
+                        class="block text-xs font-semibold uppercase text-slate-500 mb-1"
+                        >Nombre de la Vacuna</label
+                      >
+                      <input
+                        type="text"
+                        id="vacunaNombre"
+                        value="Fiebre Aftosa Bivalente"
+                        class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-600"
+                      />
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                      <div>
+                        <label
+                          class="block text-xs font-semibold uppercase text-slate-500 mb-1"
+                          >Dosis (ml)</label
+                        >
+                        <input
+                          type="text"
+                          id="vacunaDosis"
+                          value="5 ml"
+                          class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm"
+                        />
+                      </div>
+                      <div>
+                        <label
+                          class="block text-xs font-semibold uppercase text-slate-500 mb-1"
+                          >Fecha de Aplicación</label
+                        >
+                        <input
+                          type="date"
+                          id="vacunaFecha"
+                          class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm"
+                        />
+                      </div>
+                    </div>
+                    <div>
+                      <label
+                        class="block text-xs font-semibold uppercase text-slate-500 mb-1"
+                        >Observaciones Clínicas</label
+                      >
+                      <textarea
+                        id="vacunaObs"
+                        rows="2"
+                        class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm"
+                      >
+Animal en óptimas condiciones para recibir profilaxis.</textarea
+                      >
+                    </div>
+                    <button
+                      onclick="ejecutarRegistroVacuna()"
+                      class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-2.5 rounded-lg text-sm transition shadow"
+                    >
+                      Registrar Vacuna (Validar e Insertar en DB)
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Live Sequence Log Console -->
+                <div
+                  class="bg-slate-900 text-slate-200 p-4 rounded-xl font-mono text-xs flex flex-col justify-between"
+                >
+                  <div>
+                    <div
+                      class="flex justify-between items-center pb-2 mb-3 border-b border-slate-800"
+                    >
+                      <span class="text-emerald-400 font-bold"
+                        ><i class="fa-solid fa-terminal mr-1"></i> Trazas del
+                        Diagrama de Secuencia</span
+                      >
+                      <button
+                        onclick="clearConsole()"
+                        class="text-slate-400 hover:text-white text-[10px]"
+                      >
+                        Limpiar
+                      </button>
+                    </div>
+                    <div
+                      id="consoleLog"
+                      class="space-y-2 overflow-y-auto max-h-[350px]"
+                    >
+                      <p class="text-slate-500">
+                        [Sistema inicializado. Esperando interacción del
+                        Veterinario...]
+                      </p>
+                    </div>
+                  </div>
+                  <div
+                    class="mt-4 pt-3 border-t border-slate-800 text-[10px] text-slate-400 flex justify-between"
+                  >
+                    <span
+                      >Participantes: Interfaz -> Sistema -> Base de Datos</span
+                    >
+                    <span class="text-emerald-400">Estado: Conectado</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- TAB 3: STATE MACHINE VIEWER (Actividad 8) -->
+          <div id="tabState" class="hidden space-y-4">
+            <div
+              class="bg-white rounded-xl shadow-sm border border-slate-100 p-6"
+            >
+              <h3 class="font-bold text-slate-800 text-base mb-2">
+                <i
+                  class="fa-solid fa-diagram-project text-emerald-600 mr-2"
+                ></i>
+                Simulador de Transición de Estados (Objeto Animal)
+              </h3>
+              <p class="text-xs text-slate-500 mb-6">
+                Pruebe los eventos descritos en la Figura 5 del taller para
+                cambiar el estado dinámico de un animal.
+              </p>
+
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div
+                  class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3"
+                >
+                  <h4 class="font-bold text-slate-700 text-sm">
+                    Estado Seleccionado
+                  </h4>
+                  <div
+                    class="bg-amber-50 border border-amber-200 text-amber-900 p-4 rounded-lg text-center font-bold text-lg"
+                    id="currentStateDisplay"
+                  >
+                    Activo
+                  </div>
+                  <p class="text-xs text-slate-500 text-center">
+                    Seleccione un evento de transición para cambiar el estado
+                    según el ciclo del modelo.
+                  </p>
+                </div>
+
+                <div class="md:col-span-2 space-y-3">
+                  <h4 class="font-bold text-slate-700 text-sm">
+                    Disparar Eventos de Transición
+                  </h4>
+                  <div class="grid grid-cols-2 gap-3">
+                    <button
+                      onclick="
+                        cambiarEstado('Registrado', 'Alta en el sistema')
+                      "
+                      class="p-3 bg-white hover:bg-emerald-50 border border-slate-200 hover:border-emerald-300 rounded-lg text-left transition shadow-xs"
+                    >
+                      <span class="block text-xs font-bold text-emerald-700"
+                        >Evento: Alta</span
+                      >
+                      <span class="text-[11px] text-slate-500"
+                        >Transición a: Registrado</span
+                      >
+                    </button>
+                    <button
+                      onclick="cambiarEstado('Activo', 'Habilitar seguimiento')"
+                      class="p-3 bg-white hover:bg-emerald-50 border border-slate-200 hover:border-emerald-300 rounded-lg text-left transition shadow-xs"
+                    >
+                      <span class="block text-xs font-bold text-emerald-700"
+                        >Evento: Habilitar</span
+                      >
+                      <span class="text-[11px] text-slate-500"
+                        >Transición a: Activo</span
+                      >
+                    </button>
+                    <button
+                      onclick="
+                        cambiarEstado('Enfermo', 'Registrar diagnóstico')
+                      "
+                      class="p-3 bg-white hover:bg-emerald-50 border border-slate-200 hover:border-emerald-300 rounded-lg text-left transition shadow-xs"
+                    >
+                      <span class="block text-xs font-bold text-emerald-700"
+                        >Evento: Diagnóstico</span
+                      >
+                      <span class="text-[11px] text-slate-500"
+                        >Transición a: Enfermo</span
+                      >
+                    </button>
+                    <button
+                      onclick="
+                        cambiarEstado(
+                          'En_Tratamiento',
+                          'Iniciar tratamiento veterinario',
+                        )
+                      "
+                      class="p-3 bg-white hover:bg-emerald-50 border border-slate-200 hover:border-emerald-300 rounded-lg text-left transition shadow-xs"
+                    >
+                      <span class="block text-xs font-bold text-emerald-700"
+                        >Evento: Iniciar tratamiento</span
+                      >
+                      <span class="text-[11px] text-slate-500"
+                        >Transición a: En_Tratamiento</span
+                      >
+                    </button>
+                    <button
+                      onclick="cambiarEstado('Recuperado', 'Alta médica')"
+                      class="p-3 bg-white hover:bg-emerald-50 border border-slate-200 hover:border-emerald-300 rounded-lg text-left transition shadow-xs"
+                    >
+                      <span class="block text-xs font-bold text-emerald-700"
+                        >Evento: Alta médica</span
+                      >
+                      <span class="text-[11px] text-slate-500"
+                        >Transición a: Recuperado</span
+                      >
+                    </button>
+                    <button
+                      onclick="cambiarEstado('Fallecido', 'Registro de muerte')"
+                      class="p-3 bg-white hover:bg-rose-50 border border-slate-200 hover:border-rose-300 rounded-lg text-left transition shadow-xs"
+                    >
+                      <span class="block text-xs font-bold text-rose-700"
+                        >Evento: Muerte</span
+                      >
+                      <span class="text-[11px] text-slate-500"
+                        >Transición a: Fallecido [*]</span
+                      >
+                    </button>
+                    <button
+                      onclick="cambiarEstado('Vendido', 'Registrar venta')"
+                      class="p-3 bg-white hover:bg-indigo-50 border border-slate-200 hover:border-indigo-300 rounded-lg text-left transition shadow-xs"
+                    >
+                      <span class="block text-xs font-bold text-indigo-700"
+                        >Evento: Venta</span
+                      >
+                      <span class="text-[11px] text-slate-500"
+                        >Transición a: Vendido [*]</span
+                      >
+                    </button>
+                    <button
+                      onclick="
+                        cambiarEstado('Trasladado', 'Registrar traslado')
+                      "
+                      class="p-3 bg-white hover:bg-indigo-50 border border-slate-200 hover:border-indigo-300 rounded-lg text-left transition shadow-xs"
+                    >
+                      <span class="block text-xs font-bold text-indigo-700"
+                        >Evento: Traslado</span
+                      >
+                      <span class="text-[11px] text-slate-500"
+                        >Transición a: Trasladado [*]</span
+                      >
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+
+      <!-- FOOTER -->
+      <footer
+        class="bg-white border-t border-slate-200 mt-auto py-4 text-center text-xs text-slate-500"
+      >
+        AgroControl S.A.S. • Corporación Universitaria Minuto de Dios
+        (UNIMINUTO) • Taller UML 2025
+      </footer>
+    </div>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+      // Initial Mock Database State
+      let animals = [
+        {
+          arete: "ARETE-001",
+          especie: "Bovino (Cebú)",
+          finca: "La Esperanza",
+          peso: "420 kg",
+          estado: "Activo",
+        },
+        {
+          arete: "ARETE-002",
+          especie: "Bovino (Holstein)",
+          finca: "Villa Sofía",
+          peso: "380 kg",
+          estado: "Enfermo",
+        },
+        {
+          arete: "ARETE-003",
+          especie: "Ovino (Pelibuey)",
+          finca: "La Esperanza",
+          peso: "55 kg",
+          estado: "En_Tratamiento",
+        },
+        {
+          arete: "ARETE-004",
+          especie: "Bovino (Brahman)",
+          finca: "El Retiro",
+          peso: "450 kg",
+          estado: "Registrado",
+        },
+      ];
+
+      // Set default date to today
+      document.getElementById("vacunaFecha").valueAsDate = new Date();
+
+      function login() {
+        const email = document.getElementById("loginEmail").value;
+        const role = document.getElementById("loginRole").value;
+
+        if (!email) {
+          alert("Por favor ingrese un correo válido");
+          return;
+        }
+
+        document.getElementById("loginView").classList.add("hidden");
+        document.getElementById("dashboardView").classList.remove("hidden");
+        document.getElementById("userBadge").classList.remove("hidden");
+        document.getElementById("btnLogout").classList.remove("hidden");
+
+        document.getElementById("userNameRole").innerText = `Rol: ${role}`;
+        document.getElementById("welcomeMsg").innerText =
+          `Bienvenido, ${email.split("@")[0]} (${role})`;
+
+        renderAnimalsTable();
+        logConsole(`[CU-01] Usuario autenticado exitosamente con rol: ${role}`);
+      }
+
+      function logout() {
+        document.getElementById("dashboardView").classList.add("hidden");
+        document.getElementById("loginView").classList.remove("hidden");
+        document.getElementById("userBadge").classList.add("hidden");
+        document.getElementById("btnLogout").classList.add("hidden");
+      }
+
+      function switchTab(tab) {
+        document.getElementById("tabAnimals").classList.add("hidden");
+        document.getElementById("tabVaccine").classList.add("hidden");
+        document.getElementById("tabState").classList.add("hidden");
+
+        if (tab === "animals")
+          document.getElementById("tabAnimals").classList.remove("hidden");
+        if (tab === "vaccine")
+          document.getElementById("tabVaccine").classList.remove("hidden");
+        if (tab === "state")
+          document.getElementById("tabState").classList.remove("hidden");
+      }
+
+      function renderAnimalsTable() {
+        const tbody = document.getElementById("animalTableBody");
+        tbody.innerHTML = "";
+        animals.forEach((a) => {
+          let badgeColor = "bg-emerald-100 text-emerald-800";
+          if (a.estado === "Enfermo")
+            badgeColor = "bg-amber-100 text-amber-800";
+          if (a.estado === "En_Tratamiento")
+            badgeColor = "bg-blue-100 text-blue-800";
+          if (a.estado === "Registrado")
+            badgeColor = "bg-slate-100 text-slate-800";
+
+          tbody.innerHTML += `
+                    <tr class="hover:bg-slate-50 transition">
+                        <td class="p-3 font-medium text-slate-900">${a.arete}</td>
+                        <td class="p-3 text-slate-600">${a.especie}</td>
+                        <td class="p-3 text-slate-600">${a.finca}</td>
+                        <td class="p-3 text-slate-600">${a.peso}</td>
+                        <td class="p-3"><span class="px-2.5 py-1 rounded-full text-xs font-semibold ${badgeColor}">${a.estado}</span></td>
+                        <td class="p-3 text-right">
+                            <button onclick="seleccionarParaVacunar('${a.arete}')" class="text-emerald-600 hover:text-emerald-800 text-xs font-semibold mr-2"><i class="fa-solid fa-syringe"></i> Vacunar</button>
+                        </td>
+                    </tr>
+                `;
+        });
+      }
+
+      function seleccionarParaVacunar(arete) {
+        document.getElementById("searchArete").value = arete;
+        switchTab("vaccine");
+        simularBusquedaAnimal();
+      }
+
+      function simularBusquedaAnimal() {
+        const areteInput = document.getElementById("searchArete").value.trim();
+        const encontrado = animals.find(
+          (a) => a.arete.toLowerCase() === areteInput.toLowerCase(),
+        );
+
+        logConsole(
+          `[Paso 4-7] Veterinario busca el animal con arete: ${areteInput}`,
+        );
+        logConsole(
+          `[Paso 8] SELECT * FROM animal WHERE arete = '${areteInput}'`,
+        );
+
+        if (encontrado) {
+          document.getElementById("animalInfoCard").classList.remove("hidden");
+          document.getElementById("infoArete").innerText = encontrado.arete;
+          document.getElementById("infoRaza").innerText = encontrado.especie;
+          document.getElementById("infoEstado").innerText = encontrado.estado;
+          logConsole(
+            `[Paso 9-10] Base de datos retorna animal y sistema muestra interfaz.`,
+          );
+        } else {
+          document.getElementById("animalInfoCard").classList.add("hidden");
+          logConsole(
+            `[Error] El animal con arete ${areteInput} no fue encontrado.`,
+          );
+          alert("Animal no encontrado en el sistema.");
+        }
+      }
+
+      function ejecutarRegistroVacuna() {
+        const arete = document.getElementById("searchArete").value;
+        const vacuna = document.getElementById("vacunaNombre").value;
+        const dosis = document.getElementById("vacunaDosis").value;
+
+        if (!vacuna) {
+          alert("Ingrese el nombre de la vacuna");
+          return;
+        }
+
+        logConsole(
+          `[Paso 11-12] Veterinario ingresa datos de vacuna (${vacuna}, ${dosis}) y envía a validación.`,
+        );
+        logConsole(`[Paso 13] Sistema asocia vacuna con el Animal (${arete}).`);
+        logConsole(
+          `[Paso 14] INSERT INTO vacuna (nombre, dosis, arete) VALUES ('${vacuna}', '${dosis}', '${arete}');`,
+        );
+        logConsole(
+          `[Paso 15-16] Base de datos confirma almacenamiento. Éxito visual mostrado al Veterinario.`,
+        );
+
+        alert(`¡Vacuna "${vacuna}" registrada con éxito al animal ${arete}!`);
+      }
+
+      function logConsole(text) {
+        const consoleBox = document.getElementById("consoleLog");
+        const p = document.createElement("p");
+        p.innerText = `> ${text}`;
+        consoleBox.appendChild(p);
+        consoleBox.scrollTop = consoleBox.scrollHeight;
+      }
+
+      function clearConsole() {
+        document.getElementById("consoleLog").innerHTML =
+          '<p class="text-slate-500">[Consola limpia]</p>';
+      }
+
+      function cambiarEstado(nuevoEstado, evento) {
+        document.getElementById("currentStateDisplay").innerText = nuevoEstado;
+        logConsole(
+          `[Máquina de Estados] Evento disparado: "${evento}" -> Estado actual: ${nuevoEstado}`,
+        );
+      }
+    </script>
+  </body>
+</html>
